@@ -1,11 +1,11 @@
 # Auteurs du projet
 
-## Sarah Reboullet
+## Nathan POTIER
 
-Mail : reboullet@irif.fr
-ID GitLab/moule : @sreboullet
+Mail : nathan.pro.po@gmail.com
+ID GitLab/moule : @potier
 
-## Aldric Degorre
+## Jonas RAMANATHAN
 
-Mail : adegorre@irif.fr
-ID GitLab/moule : @degorre
+Mail : jonas.ramanathan@gmail.com
+ID GitLab/moule : @ramanath
