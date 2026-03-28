@@ -1,0 +1,1 @@
+/home/nathan/projet-ru6-2526/rustake/target/debug/rustake: /home/nathan/projet-ru6-2526/rustake/src/cli.rs /home/nathan/projet-ru6-2526/rustake/src/config.rs /home/nathan/projet-ru6-2526/rustake/src/main.rs

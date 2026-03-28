@@ -4,8 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+# Pour la gestion des arguments de la ligne de commande
 clap = { version = "4.4", features = ["derive"] }
+# Pour la désérialisation des structures de données
 serde = { version = "1.0", features = ["derive"] }
+# Pour lire spécifiquement le format TOML
 toml = "0.8"
-blake3 = "1.5"
-petgraph = "0.6"
