@@ -1,6 +1,7 @@
 mod cli;
 mod config;
 mod graphe;
+mod runner;
 
 use clap::Parser;
 use std::fs;
@@ -81,8 +82,20 @@ fn main() {
             process::exit(1);
         }
     }
+
+    println!("\n--- Début du Build ---");
+    
+    match runner::executer_cibles(&ordre_execution, &rustake_config.targets) {
+        Ok(_) => {
+            println!("Build terminé avec succès !");
+        }
+        Err(erreur) => {
+            eprintln!("Erreur fatale : {}", erreur);
+            process::exit(1);
+        }
+    }
+
     // TODO: Vérification des hashs (blake3)
-    // TODO: Exécution des commandes (std::process::Command)
 }
 
 /// Fonction utilitaire pour la commande `rustake init`
