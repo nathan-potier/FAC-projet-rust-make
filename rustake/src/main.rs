@@ -2,6 +2,7 @@ mod cli;
 mod config;
 mod graphe;
 mod runner;
+mod cache;
 
 use clap::Parser;
 use std::fs;
@@ -84,10 +85,14 @@ fn main() {
     }
 
     println!("\n--- Début du Build ---");
+
+    //On charge le cache
+    let mut cache = cache::Cache::charger();
     
-    match runner::executer_cibles(&ordre_execution, &rustake_config.targets) {
+    match runner::executer_cibles(&ordre_execution, &rustake_config.targets, &mut cache) {
         Ok(_) => {
             println!("Build terminé avec succès !");
+            cache.sauvegarder();
         }
         Err(erreur) => {
             eprintln!("Erreur fatale : {}", erreur);
@@ -95,7 +100,6 @@ fn main() {
         }
     }
 
-    // TODO: Vérification des hashs (blake3)
 }
 
 /// Fonction utilitaire pour la commande `rustake init`

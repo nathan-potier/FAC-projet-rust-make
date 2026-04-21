@@ -1,6 +1,6 @@
-[targets.mon_petit_programme]
+[targets.programme]
 depends = ["hello.rs"]
-command = "rustc hello.rs -o mon_petit_programme"
+command = "rustc hello.rs -o programme"
 
 [targets.default]
-depends = ["mon_petit_programme"]
+depends = ["programme"]

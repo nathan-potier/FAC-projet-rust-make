@@ -1,11 +1,13 @@
 use std::process::Command;
 use std::collections::HashMap;
 use crate::config::Target;
+use crate::cache::{Cache, calculer_hash_fichier};
 
 /// Parcourt l'ordre d'exécution et lance les commandes système
 pub fn executer_cibles(
     ordre_execution: &[&str],
     toutes_les_cibles: &HashMap<String, Target>,
+    cache: &mut Cache,
 ) -> Result<(), String> {
     
     // On boucle sur chaque cible dans le bon ordre
@@ -14,7 +16,34 @@ pub fn executer_cibles(
         // On récupère la recette (Target) de cette cible
         if let Some(cible) = toutes_les_cibles.get(nom_cible) {
             
-            // On vérifie si la cible a une commande (Option<String>)
+            let mut a_recompiler = false;
+            let mut nouveaux_hashes = HashMap::new();
+
+            // On vérifie les dépendances de cette cible
+            for dep in &cible.depends {
+                if let Some(nouveau_hash) = calculer_hash_fichier(dep) {
+                    // On compare avec l'ancien hash connu
+                    if cache.empreintes.get(dep) != Some(&nouveau_hash) {
+                        a_recompiler = true;
+                    }
+                    nouveaux_hashes.insert(dep.clone(), nouveau_hash);
+                } else {
+                    // Si on ne peut pas hasher la dépendance (ex: c'est un nom de cible, pas un fichier)
+                    a_recompiler = true; 
+                }
+            }
+
+            // Si c'est juste une cible de regroupement (ex: "default")
+            if cible.command.is_none() {
+                continue;
+            }
+
+            // Si rien n'a changé, on saute l'exécution
+            if !a_recompiler {
+                println!("C'est bon, [{}] est déjà à jour.", nom_cible);
+                continue;
+            }
+
             if let Some(commande_str) = &cible.command {
                 println!("Exécution de [{}] : {}", nom_cible, commande_str);
 
@@ -35,15 +64,14 @@ pub fn executer_cibles(
                         .map_err(|e| format!("Impossible de lancer '{}' : {}", programme, e))?;
 
                     if !statut.success() {
-                        return Err(format!(
-                            "Échec de la cible '{}' ! La commande a renvoyé une erreur.", 
-                            nom_cible
-                        ));
+                        return Err(format!("Échec de la cible '{}'.", nom_cible));
+                    }
+
+                    // L'exécution a réussi : On met à jour le cache avec les nouveaux hashs
+                    for (dep, hash) in nouveaux_hashes {
+                        cache.empreintes.insert(dep, hash);
                     }
                 }
-            } else {
-                //cible de regroupement
-                println!("Cible [{}] atteinte (aucune commande à exécuter).", nom_cible);
             }
         }
     }

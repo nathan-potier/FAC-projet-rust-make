@@ -4,7 +4,7 @@ use crate::config::Target;
 /// Résout l'ordre des dépendances en évitant les cycles
 pub fn resoudre_dependances<'a>(
     nom_cible: &'a str,
-    toutes_les_cibles: &'a std::collections::HashMap<String, Target>,
+    toutes_les_cibles: &'a HashMap<String, Target>,
     ordre_execution: &mut Vec<&'a str>,
     visitees: &mut HashSet<&'a str>,
     en_cours_de_visite: &mut HashSet<&'a str>,
