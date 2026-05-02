@@ -25,8 +25,35 @@ fn main() {
                 return;
             }
             Commands::Clean => {
-                println!("La commande 'clean' n'est pas encore implémentée.");
-                // TODO: Supprimer le cache et les cibles
+                println!("Nettoyage en cours...");
+                
+                // Supprimer le fichier de cache
+                let fichier_cache = ".rustake_cache.json";
+                if std::path::Path::new(fichier_cache).exists() {
+                    match fs::remove_file(fichier_cache) {
+                        Ok(_) => println!(" - Cache '{}' supprimé.", fichier_cache),
+                        Err(e) => eprintln!("Impossible de supprimer le cache : {}", e),
+                    }
+                } else {
+                    println!(" - Aucun cache trouvé.");
+                }
+
+                // Lire le Rustakefile pour connaître le nom des cibles à supprimer
+                if let Ok(config_content) = fs::read_to_string(&cli.file) {
+                    if let Ok(config) = toml::from_str::<Rustakefile>(&config_content) {
+                        for (nom_cible, cible) in config.targets {
+                            // Si la cible a une commande, nom_cible est le fichier généré
+                            if cible.command.is_some() && std::path::Path::new(&nom_cible).exists() {
+                                match fs::remove_file(&nom_cible) {
+                                    Ok(_) => println!(" - Cible '{}' supprimée.", nom_cible),
+                                    Err(e) => eprintln!("Impossible de supprimer '{}' : {}", nom_cible, e),
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                println!("Nettoyage terminé !");
                 return;
             }
         }

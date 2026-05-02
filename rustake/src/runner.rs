@@ -19,6 +19,13 @@ pub fn executer_cibles(
             let mut a_recompiler = false;
             let mut nouveaux_hashes = HashMap::new();
 
+            // Vérifier si le fichier cible existe
+            // On ne le fait que si la cible a une commande
+            if cible.command.is_some() && !std::path::Path::new(nom_cible).exists() {
+                println!("La cible [{}] n'existe pas sur le disque, on doit la créer.", nom_cible);
+                a_recompiler = true;
+            }
+
             // On vérifie les dépendances de cette cible
             for dep in &cible.depends {
                 if let Some(nouveau_hash) = calculer_hash_fichier(dep) {

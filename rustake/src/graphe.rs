@@ -46,3 +46,54 @@ pub fn resoudre_dependances<'a>(
 
     Ok(())
 }
+
+// TESTS UNITAIRES
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_dependance_simple_sans_cycle() {
+        let mut cibles = HashMap::new();
+        cibles.insert("programme".to_string(),Target { depends: vec!["main.rs".to_string()], command: None });
+
+        let mut ordre = Vec::new();
+        let mut visitees = HashSet::new();
+        let mut en_cours = HashSet::new();
+
+        let resultat = resoudre_dependances("programme", &cibles, &mut ordre, &mut visitees, &mut en_cours);
+        
+        assert!(resultat.is_ok(), "Le graphe simple ne devrait pas renvoyer d'erreur");
+        assert_eq!(ordre, vec!["main.rs", "programme"]);
+    }
+
+    #[test]
+    fn test_dependance_circulaire_detectee() {
+        let mut cibles = HashMap::new();
+        // A dépend de B
+        cibles.insert(
+            "A".to_string(),
+            Target { depends: vec!["B".to_string()], command: None }
+        );
+        // B dépend de A
+        cibles.insert(
+            "B".to_string(),
+            Target { depends: vec!["A".to_string()], command: None }
+        );
+
+        let mut ordre = Vec::new();
+        let mut visitees = HashSet::new();
+        let mut en_cours = HashSet::new();
+
+        let resultat = resoudre_dependances("A", &cibles, &mut ordre, &mut visitees, &mut en_cours);
+        
+        // On s'attend à ce que ça échoue (is_err)
+        assert!(resultat.is_err(), "Le cycle A -> B -> A n'a pas été détecté !");
+        
+        // On vérifie même le message d'erreur
+        if let Err(msg) = resultat {
+            assert!(msg.contains("circulaire"), "Le message d'erreur ne parle pas de cycle circulaire");
+        }
+    }
+}
