@@ -16,9 +16,11 @@
 
 ---
 
-## Utilisation et Démonstration
-### 1. Environnement de base
-Assurez-vous d'avoir un fichier source et un fichier de configuration prêts à l'emploi.
+## Installation
+
+Pour que `rustake` se comporte exactement comme `make` et qu'il soit accessible de n'importe où sur votre ordinateur (sans avoir besoin de taper `cargo run`).
+
+Placez-vous dans le dossier racine du projet et exécutez la commande suivante :
+
 ```bash
-cat hello.rs
-cat Rustakefile.toml
+cargo install --path
